@@ -7,7 +7,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,23 +15,72 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Room',
+            name="Room",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=64, verbose_name='Room name')),
-                ('description', models.TextField(max_length=128, verbose_name='Description')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Created time')),
-                ('host', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=64, verbose_name="Room name")),
+                (
+                    "description",
+                    models.TextField(max_length=128, verbose_name="Description"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="Created time"
+                    ),
+                ),
+                (
+                    "host",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.TextField(verbose_name='Content')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Created time')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to=settings.AUTH_USER_MODEL)),
-                ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='chat.room')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("content", models.TextField(verbose_name="Content")),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="Created time"
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "room",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages",
+                        to="chat.room",
+                    ),
+                ),
             ],
         ),
     ]
