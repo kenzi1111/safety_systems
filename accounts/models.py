@@ -78,9 +78,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __unicode__(self):
         return self.screen_name or self.email
 
+
 # ユーザ情報ページ
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    address = models.TextField(blank=False,null=False)
-    phone_number = models.CharField(max_length=15,blank=False,null=False)
-    user_image = models.ImageField(upload_to='profile_pictures/', blank=False, null=False)
+    address = models.TextField(blank=False, null=False)
+    phone_number = models.CharField(max_length=15, blank=False, null=False)
+    user_image = models.ImageField(
+        upload_to="profile_pictures/", blank=False, null=False
+    )
