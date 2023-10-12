@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ user.screen_name }}のプロフィール</h2>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <img src="{{ user.userprofile.user_image.url }}" alt="Profile Image" class="img-fluid">
+        </div>
+        <div class="col-md-8">
+            <table class="table">
+                <tr>
+                    <th>Email</th>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <th>住所</th>
+                    <td>{{ user.userprofile.address }}</td>
+                </tr>
+                <tr>
+                    <th>電話番号</th>
+                    <td>{{ user.userprofile.phone_number }}</td>
+                </tr>
+            </table>
+            <a href="{% url 'profile_edit' user.id %}" class="btn btn-primary">編集</a>
+            <a href="{% url 'profile_delete' user.id %}" class="btn btn-danger">削除</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
