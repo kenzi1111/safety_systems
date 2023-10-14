@@ -6,10 +6,10 @@
     <div class="col-12">
         <div class="row">
             <div class="col-12 col-md-10">
-                <h3 class="h3">Chat Room -{{ room|stringformat:"s" }}-</h3>
+                <h3 class="h3">チャットルーム -{{ room|stringformat:"s" }}-</h3>
             </div>
             <div class="col-12 col-md-2">
-                <a href="{% url 'chat:index' %}" class="btn btn-outline-secondary btn-block">Back</a>
+                <a href="{% url 'chat:index' %}" class="btn btn-outline-secondary btn-block">戻る</a>
             </div>
         </div>
         <div class="row mt-3">
@@ -19,7 +19,7 @@
         </div>
         <div class="row mt-2">
             <div class="col-12">
-                <button type="submit" id="submit-chat-message" class="btn btn-primary btn-block">Send (Ctrl + Enter)</button>
+                <button type="submit" id="submit-chat-message" class="btn btn-primary btn-block">送信 (Ctrl + Enter)</button>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
                     <div class="row">
                         <div class="col-12">
                             <span class="card-username">{{ message.owner|stringformat:"s" }}</span>
-                            <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(created at {{ message.created_at|date:'Y-m-d H:i:s' }})</time>
+                            <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(送信日 {{ message.created_at|date:'Y-m-d H:i:s' }})</time>
                         </div>
                     </div>
                     <div class="row">

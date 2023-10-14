@@ -1,4 +1,11 @@
-from django.views.generic import (TemplateView, CreateView, UpdateView, DeleteView, DetailView,)
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    DetailView,
+    ListView,
+)
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from .forms import UserProfileForm
@@ -47,6 +54,12 @@ class UserProfileDeleteView(DeleteView):
 class UserProfileDetailView(DetailView):
     model = UserProfile
     template_name = "userprofile_detail.html"
+
+# ユーザ情報の一覧を表示
+class UserProfileListView(ListView):
+    model = UserProfile
+    template_name = "profile_list.html"  # 一覧表示用のテンプレート名を指定
+    context_object_name = "profiles"  # テンプレート内で使用する変数名を指定
 
 # ユーザの住所情報を地図に表示
 class ShowMap(View):

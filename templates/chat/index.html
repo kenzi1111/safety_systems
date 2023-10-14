@@ -6,7 +6,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Filtering</h5>
+                <h5 class="card-title">チャットルームの検索</h5>
                 <form action="", method="GET">
                     <div class="form-group row">
                         <div class="col-12">
@@ -15,10 +15,10 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <button type="submit" class="btn btn-primary btn-block">Search</button>
+                            <button type="submit" class="btn btn-primary btn-block">検索</button>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <a href="{% url 'chat:index' %}" class="btn btn-secondary btn-block">Output all</a>
+                            <a href="{% url 'chat:index' %}" class="btn btn-secondary btn-block">一覧表示</a>
                         </div>
                     </div>
                 </form>
@@ -30,10 +30,10 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Create room</h5>
+                <h5 class="card-title">チャットルームの新規作成</h5>
                 <div class="row">
                     <div class="col-12">
-                        <a href="{% url 'chat:create_room' %}" class="btn btn-success btn-block">Create</a>
+                        <a href="{% url 'chat:create_room' %}" class="btn btn-success btn-block">新規作成</a>
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                         <p>{{ room.description }}</p>
                         <div>
                             <span>{{ room.host|stringformat:"s" }}</span>
-                            <time datetime="{{ room.created_at|date:'Y-m-d' }}">(created at {{ room.created_at|naturaltime }})</time>
+                            <time datetime="{{ room.created_at|date:'Y-m-d' }}">(作成日 {{ room.created_at|naturaltime }})</time>
                         </div>
                     </div>
                     <div class="col-4">
@@ -59,15 +59,15 @@
                         <div class="dropdown mt-2">
                             <a class="btn btn-outline-secondary btn-block dropdown-toggle" href="#" role="button" 
                                id="dropdownMenuLink{{ forloop.counter }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                               Control
+                               選択
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink{{ forloop.counter }}">
-                                <a href="{% url 'chat:update_room' room.pk %}" class="dropdown-item">Update</a>
+                                <a href="{% url 'chat:update_room' room.pk %}" class="dropdown-item">更新</a>
                                 <div class="dropdown-divider"></div>
                                 <button type="button" class="dropdown-item delete-room-modal-button" 
                                         data-deleteurl="{% url 'chat:delete_room' room.pk %}">
-                                    <span style="color: red">Delete</span>
+                                    <span style="color: red">削除</span>
                                 </button>
                             </div>
                         </div>
@@ -96,19 +96,19 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmation of deletion</h5>
+                <h5 class="modal-title">削除の確認</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>May I really delete this room ?</p>
+                <p>このチャットルームを削除しますか？</p>
             </div>
             <div class="modal-footer">
                 <form action="" method="POST" id="delete-room-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Accept</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">決定</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
                 </form>
             </div>
         </div>
