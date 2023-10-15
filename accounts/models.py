@@ -82,6 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 # ユーザ情報ページ
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=255,null = True)
     address = models.TextField(blank=False, null=False)
     phone_number = models.CharField(max_length=15, blank=False, null=False)
     user_image = models.ImageField(

@@ -51,7 +51,7 @@
                         <p>{{ room.description }}</p>
                         <div>
                             <span>{{ room.host|stringformat:"s" }}</span>
-                            <time datetime="{{ room.created_at|date:'Y-m-d' }}">(作成日 {{ room.created_at|naturaltime }})</time>
+                            <time datetime="{{ room.created_at|date:'Y-m-d' }}">(作成日時 {{ room.created_at|naturaltime }})</time>
                         </div>
                     </div>
                     <div class="col-4">

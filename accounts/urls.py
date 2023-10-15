@@ -15,16 +15,10 @@ urlpatterns = [
     path("", views.Index.as_view(), name="index"),
     path("login/", views.LoginPage.as_view(), name="login"),
     path("logout/", views.LogoutPage.as_view(), name="logout"),
-    path("profile/new/", UserProfileCreateView.as_view(), name="profile_Create"),
-    path("profile/<int:user_id>/", UserProfileDetailView.as_view(), name="profile_detail"),
-    path(
-        "profile/<int:pk>/edit/", UserProfileUpdateView.as_view(), name="profile_update"
-    ),
-    path(
-        "profile/<int:pk>/delete/",
-        UserProfileDeleteView.as_view(),
-        name="profile_delete",
-    ),
-    path("profiles/", views.UserProfileListView.as_view(), name="profile_list"),
+    path("profile/new/", UserProfileCreateView.as_view(), name="profile_create"),
+    path("profile/<int:pk>/", UserProfileDetailView.as_view(), name="profile_detail"),
+    path("profile/<int:pk>/edit/", UserProfileUpdateView.as_view(), name="profile_update"),
+    path("profile/<int:pk>/delete/",UserProfileDeleteView.as_view(),name="profile_delete"),
+    path("profile/", views.UserProfileListView.as_view(), name="profile_list"),
     path("showmap/<int:user_id>/", ShowMap.as_view(), name="show_map"),
 ]
