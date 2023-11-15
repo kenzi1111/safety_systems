@@ -7,12 +7,9 @@
 <ul>
     {% for profile in profiles %}
     <li>
-        <a href="{% url 'accounts:profile_detail' pk=user.userprofile.pk %}">
-            {{ profile.user.username }} ({{ profile.user.email }}) ({{ profile.user.phone }})
+        <a href="{% url 'accounts:profile_detail' pk=profile.user.pk %}">
+            ＜ユーザ名＞： {{ profile.username }}  ＜電話番号＞： {{ profile.phone_number }}
         </a>
-        <!-- 編集と削除のリンク -->
-        <a href="{% url 'accounts:profile_update' pk=user.userprofile.pk %}">[編集]</a>
-        <a href="{% url 'accounts:profile_delete' pk=user.userprofile.pk %}">[削除]</a>
     </li>
     {% endfor %}
 

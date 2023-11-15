@@ -11,7 +11,7 @@ class SearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "placeholder": gettext_lazy("Enter the room name."),
+                "placeholder": gettext_lazy("チャットルームの名前を入力してください"),
                 "class": "form-control",
             }
         ),
@@ -34,7 +34,7 @@ class RoomForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "placeholder": gettext_lazy("Enter the room name."),
+                    "placeholder": gettext_lazy("チャットルームの名前を入力してください"),
                     "class": "form-control",
                 }
             ),
@@ -43,7 +43,7 @@ class RoomForm(forms.ModelForm):
                     "rows": 5,
                     "cols": 10,
                     "style": "resize: none",
-                    "placeholder": gettext_lazy("Enter the description."),
+                    "placeholder": gettext_lazy("チャットルームの概要"),
                     "class": "form-control",
                 }
             ),
