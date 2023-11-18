@@ -16,6 +16,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+# googlemap_APIの環境変数を指定
+# 環境変数を使用
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -1,3 +1,4 @@
+import os
 from django.views.generic import (
     TemplateView,
     CreateView,
@@ -79,7 +80,8 @@ class UserProfileDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 必要に応じて、ここで追加のコンテキストデータを追加できます。
+        # 環境変数からAPIキーを取得してコンテキストに追加
+        context["google_maps_api_key"] = os.getenv("GOOGLE_MAPS_API_KEY")
         return context
 
 

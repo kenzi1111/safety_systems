@@ -32,5 +32,5 @@ urlpatterns = [
         name="profile_delete",
     ),
     path("profile/", views.UserProfileListView.as_view(), name="profile_list"),
-    path("showmap/<int:user_id>/", ShowMap.as_view(), name="show_map"),
+    path("show_map/", ShowMap.as_view(), name="show_map"),
 ]
