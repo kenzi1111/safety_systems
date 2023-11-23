@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import UserProfile
 
 # from django.http import HttpRequest
-from django.views import View
+# from django.views import View
 
 # from django.contrib.auth import get_user_model
 
@@ -76,7 +76,7 @@ class UserProfileDetailView(DetailView):
     def get_object(self):
         user_id = self.kwargs.get("pk")  # URLから'pk'を取得します。
         # user__id=user_idを使用して、関連するUserのidに基づいてUserProfileを検索します。
-        return get_object_or_404(UserProfile, user__id=user_id)
+        return get_object_or_404(UserProfile, user_id=user_id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,7 +93,11 @@ class UserProfileListView(ListView):
 
 
 # ユーザの住所情報を地図に表示
-class ShowMap(View):
-    def get(self, request, user_id):
-        user_profile = UserProfile.objects.get(user_id=user_id)
-        return render(request, "accounts/map.html", {"address": user_profile.address})
+class ShowMap(TemplateView):
+    template_name = "alluser_address.html"
+    model = UserProfile
+
+    def map_view(request):
+        user_profiles = UserProfile.objects.all()
+        addresses = [userprofile.address for userprofile in user_profiles]
+        return render(request, "alluser_address.html", {"addresses": addresses})
