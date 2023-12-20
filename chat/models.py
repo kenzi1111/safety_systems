@@ -78,11 +78,12 @@ class MessageManager(models.Manager):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
     content = models.TextField(gettext_lazy("Content"))
     created_at = models.DateTimeField(
         gettext_lazy("Created time"), default=timezone.now
     )
+    read = models.BooleanField(default=False)
 
     objects = MessageManager()
 

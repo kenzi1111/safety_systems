@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-from .views import ShowMap
+
+# from .views import ShowMap
 from .views import (
     UserProfileCreateView,
     UserProfileUpdateView,
@@ -32,5 +33,5 @@ urlpatterns = [
         name="profile_delete",
     ),
     path("profile/", views.UserProfileListView.as_view(), name="profile_list"),
-    path("show_map/", views.ShowMap.as_view(), name="show_map"),
+    # path("show_map/", views.ShowMap.as_view(), name="show_map"),
 ]

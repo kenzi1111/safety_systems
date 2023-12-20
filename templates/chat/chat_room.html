@@ -2,31 +2,11 @@
 {% load humanize %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12">
-        <div class="row">
-            <div class="col-12 col-md-10">
-                <h3 class="h3">チャットルーム -{{ room|stringformat:"s" }}-</h3>
-            </div>
-            <div class="col-12 col-md-2">
-                <a href="{% url 'chat:index' %}" class="btn btn-outline-secondary btn-block">戻る</a>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <textarea placeholder="メッセージを入力してください" id="chat-message-input" rows="5" class="form-control" style="resize: none;"></textarea>
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col-12">
-                <button type="submit" id="submit-chat-message" class="btn btn-primary btn-block">送信 (Ctrl + Enter)</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 <div class="row justify-content-center mt-3">
     <div class="col-12">
         <div id="chat-log">
+            <!-- チャットメッセージの表示 -->
             {% for message in room.messages.ordering %}
             <div class="card">
                 <div class="card-body">
@@ -41,10 +21,19 @@
                             {{ message.content|linebreaksbr }}
                         </div>
                     </div>
+                    <!-- 既読ボタンの追加 -->
+                    <button class="mark-read-btn" data-message-id="{{ message.id }}">既読</button>
                 </div>
             </div>
             {% empty %}
             {% endfor %}
+        </div>
+        <!-- #chat-log を閉じる </div> の直後に以下を追加 -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <input type="text" id="chat-message-input" placeholder="メッセージを入力" class="form-control">
+                <button id="submit-chat-message" class="btn btn-primary mt-2">送信</button>
+            </div>
         </div>
     </div>
 </div>
@@ -68,65 +57,98 @@
 
 {% block bodyjs %}
 <script>
-(function() {
+(function(){
     let g_socket = undefined;
 
-    // setup message
+    // メッセージ送信時の設定
     const chatMessageInput = document.querySelector('#chat-message-input');
     const submitChatMessage = document.querySelector('#submit-chat-message');
-    submitChatMessage.addEventListener('click', (event) => {
-        const message = chatMessageInput.value.trim();
+    if (submitChatMessage && chatMessageInput) {
+        submitChatMessage.addEventListener('click', (event) => {
+            const message = chatMessageInput.value.trim();
+            const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9); // メッセージIDを生成
 
-        if (g_socket && message && message.match(/\S/g)) {
-            const data = {
-                content: message,
-            };
-            g_socket.send(JSON.stringify(data));
-            chatMessageInput.value = '';
-        }
-    });
+            if (g_socket && message && message.match(/\S/g)) {
+                const data = {
+                    id: messageId,
+                    content: message,
+                };
+                g_socket.send(JSON.stringify(data));
+                displayMessage(data); // 送信と同時にメッセージを画面に表示
+                chatMessageInput.value = '';
+            }
+        });
+    }
 
-    chatMessageInput.focus();
-    chatMessageInput.addEventListener('keyup', (event) => {
-        // Check Ctrl key and Enter key
-        if (event.ctrlKey && (event.key === 'Enter')) {
-            submitChatMessage.click();
-        }
-    });
+    // メッセージを画面に表示する関数
+    function displayMessage(messageData) {
+        const template = document.querySelector('#card-template');
+        const node = template.content.cloneNode(true);
 
-    // initialization
-    const init = () => {
-        // create websocket
+        node.querySelector('.card').setAttribute('data-message-id', messageData.id);
+        node.querySelector('.card-username').textContent = messageData.username || 'あなた';
+        node.querySelector('.card-datetime').textContent = messageData.datetime || new Date().toLocaleString();
+        node.querySelector('.card-content').textContent = messageData.content;
+
+        document.querySelector('#chat-log').appendChild(node);
+    }
+
+    // WebSocketの初期化
+    function init() {
         const wsScheme = (window.location.protocol === 'https:' ? 'wss' : 'ws');
         const hostname = window.location.host;
         const roomID = '{{ room.pk }}';
         const url = `${wsScheme}://${hostname}/ws/chat/${roomID}`;
+
         g_socket = new WebSocket(url);
 
-        // message received
-        g_socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            const template = document.querySelector('#card-template');
-            const node = template.content.cloneNode(true);
-            const isSystem = (data.type !== 'user_message');
-            const fontColor = isSystem ? 'red' : 'black';
-            // setup target node
-            node.querySelector('.card-font').style.color = fontColor;
-            node.querySelector('.card-username').textContent = data.username;
-            node.querySelector('.card-datetime').textContent = data.datetime;
-            node.querySelector('.card-datetime').setAttribute('datetime', data.datetime);
-            node.querySelector('.card-content').textContent = data.content;
-            document.querySelector('#chat-log').appendChild(node);
-        };
-        g_socket.onerror = (event) => {
-            console.log(event);
-        };
-        g_socket.onclose = (event) => {
-            ;
-        };
-    };
+        // WebSocketの接続が開かれたときのイベント
+        g_socket.onopen = (event) => {
+            g_socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (!document.querySelector(`[data-message-id="${data.id}"]`)) {
+                    displayMessage(data);
+                }
+            };
 
-    document.addEventListener('DOMContentLoaded', init);
-}());
+            g_socket.onerror = (event) => {
+                console.log('WebSocket Error: ', event);
+            };
+
+            g_socket.onclose = (event) => {
+                console.log('WebSocket Connection Closed');
+            };
+        };
+    }
+
+    // WebSocketの初期化イベントリスナーをセットアップ
+    document.addEventListener('DOMContentLoaded', function() {
+        init();
+    });
+
+})();
+
+//既読ボタンの追加
+document.querySelectorAll('.mark-read-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const messageId = this.getAttribute('data-message-id');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        fetch(`/messages/<message_id>/read/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,  // CSRFトークンをヘッダーに含める
+            },
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // 既読マークのUI更新など
+                this.style.display = 'none'; // 例えばボタンを隠す
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

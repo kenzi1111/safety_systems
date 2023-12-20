@@ -13,6 +13,8 @@ from .forms import UserProfileForm
 from django.shortcuts import render, get_object_or_404
 from .models import UserProfile
 
+# from .utilities import get_coordinates_for_address
+
 # from django.http import HttpRequest
 # from django.views import View
 
@@ -92,12 +94,24 @@ class UserProfileListView(ListView):
     context_object_name = "profiles"  # テンプレート内で使用する変数名を指定
 
 
-# ユーザの住所情報を地図に表示
-class ShowMap(TemplateView):
-    template_name = "alluser_address.html"
-    model = UserProfile
+# # ユーザの住所情報を地図に表示
+# class ShowMap(TemplateView):
+#     template_name = "alluser_address.html"
+#     model = UserProfile
 
-    def map_view(request):
-        user_profiles = UserProfile.objects.all()
-        addresses = [userprofile.address for userprofile in user_profiles]
-        return render(request, "alluser_address.html", {"addresses": addresses})
+#     def map_view(request):
+#         addresses = UserProfile.objects.all()
+#         locations = []
+
+#         for address in addresses:
+#             latitude, longitude = get_coordinates_for_address(address.address)
+#             if latitude is not None and longitude is not None:
+#                 locations.append(
+#                     {
+#                         "user": UserProfile.username,
+#                         "latitude": latitude,
+#                         "longitude": longitude,
+#                     }
+#                 )
+
+#             return render(request, "alluser_address.html", {"addresses": addresses})
