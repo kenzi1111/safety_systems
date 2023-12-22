@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/chat_room.css" %}">
+
+
 {% load humanize %}
 
 {% block content %}
@@ -8,7 +12,7 @@
         <div id="chat-log">
             <!-- チャットメッセージの表示 -->
             {% for message in room.messages.ordering %}
-            <div class="card">
+            <div class="card" id="message-{{ message.id }}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
@@ -22,7 +26,7 @@
                         </div>
                     </div>
                     <!-- 既読ボタンの追加 -->
-                    <button class="mark-read-btn" data-message-id="{{ message.id }}">既読</button>
+                    <button class="mark-read-btn" data-message-id="{{ message.id }}">未読</button>
                 </div>
             </div>
             {% empty %}
@@ -133,7 +137,9 @@ document.querySelectorAll('.mark-read-btn').forEach(button => {
     button.addEventListener('click', function() {
         const messageId = this.getAttribute('data-message-id');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        fetch(`/messages/<message_id>/read/`, {
+        let isRead = this.textContent === '既読'; // ボタンの現在の状態を確認
+        let messageElement = document.querySelector(`#message-${messageId}`); // メッセージ要素を取得
+        fetch(`/chat/messages/${messageId}/read/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,8 +150,15 @@ document.querySelectorAll('.mark-read-btn').forEach(button => {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // 既読マークのUI更新など
-                this.style.display = 'none'; // 例えばボタンを隠す
+                // ボタンのテキストとメッセージ枠の色を更新
+                this.textContent = isRead ? '未読' : '既読';
+                if (isRead) {
+                    messageElement.classList.remove('read-message');
+                    messageElement.classList.add('unread-message');
+                } else {
+                    messageElement.classList.remove('unread-message');
+                    messageElement.classList.add('read-message');
+                }
             }
         });
     });
