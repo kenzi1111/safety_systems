@@ -49,7 +49,7 @@ class _BaseConsumer(AsyncJsonWebsocketConsumer):
         await self.post_disconnect(user)
 
 
-# global instance for chat
+# チャット用グローバルインスタンス
 g_chat_clients = {}
 
 
@@ -59,7 +59,7 @@ class ChatConsumer(_BaseConsumer):
         super().__init__(*args, **kwargs)
 
     async def post_accept(self, user):
-        # Send message to group
+        # 送信用メッセージ
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -71,7 +71,7 @@ class ChatConsumer(_BaseConsumer):
         )
 
     async def pre_disconnect(self, user):
-        # Send message to group
+        # 送信用メッセージ
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -85,11 +85,11 @@ class ChatConsumer(_BaseConsumer):
     async def post_disconnect(self, user):
         target = g_chat_clients.get(self.group_name, None)
 
-        # target is empty
+        # targetが空白のとき
         if target is not None and len(target) == 0:
             del g_chat_clients[self.group_name]
 
-    # Send message by system on connection or disconnection
+    # ネットワークの接続or切断時にシステムからメッセージを送信
     async def send_system_message(self, event):
         try:
             room_name = str(self.room)
@@ -122,7 +122,7 @@ class ChatConsumer(_BaseConsumer):
         except Exception as err:
             raise Exception(err)
 
-    # Receive message from WebSocket
+    # WebSocketからメッセージを受信
     async def receive_json(self, content):
         try:
             user = self.scope["user"]

@@ -1,7 +1,5 @@
 from django.urls import path
 from . import views
-
-# from .views import ShowMap
 from .views import (
     UserProfileCreateView,
     UserProfileUpdateView,
