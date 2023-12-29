@@ -95,3 +95,8 @@ class Message(models.Model):
         text = self.content[:32]
 
         return f"{name}:{text}"
+
+
+# 既読機能_時間管理
+class Read(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
