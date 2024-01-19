@@ -45,12 +45,11 @@ class CustomUserManager(UserManager):
 # 認証と権限をつけたユーザモデルの作成
 class User(AbstractBaseUser, PermissionsMixin):
     # ユーザ情報の保存用フィールド
-    screen_name = models.CharField(
-        gettext_lazy("screen name"),
+    username = models.CharField(
+        gettext_lazy("user name"),
         max_length=128,
         default="",
         blank=True,
-        help_text=gettext_lazy("Option. 128 characters or fewer."),
     )
     email = models.EmailField(gettext_lazy("E-mail address"), unique=True)
     is_staff = models.BooleanField(
@@ -86,7 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.__unicode__()
 
     def __unicode__(self):
-        return self.screen_name or self.email
+        return self.username or self.email
 
     # def __str__(self):
     #     return self.screen_name or self.email
@@ -95,7 +94,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 # ユーザ情報ページ
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=255, null=True)
     address = models.TextField(blank=False, null=False)
     phone_number = models.CharField(max_length=15, blank=False, null=False)
     user_image = models.ImageField(

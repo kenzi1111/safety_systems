@@ -9,9 +9,16 @@ from django.views.generic import (
 )
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
-from .forms import UserProfileForm
-from django.shortcuts import render, get_object_or_404
+from .forms import UserProfileForm, UserForm  # screen_nameを使用するため追加
+from django.shortcuts import get_object_or_404
 from .models import UserProfile
+from django.http import HttpResponseRedirect
+
+# 未読メッセージのバッチ処理
+# from django.utils import timezone
+# from datetime import timedelta
+# from chat.models import Message, RoomParticipant, MessageRecipient
+
 
 # from .utilities import get_coordinates_for_address
 
@@ -40,11 +47,34 @@ class UserProfileCreateView(CreateView):
     template_name = "userprofile_form.html"
     success_url = reverse_lazy("accounts:profile_list")
 
-    # Userprofileのデータを新しいレコードに紐つけする
+    # コンテキストデータの取得
+    # コンテキストデータの生成
+    def get_context_data(self, **kwargs):
+        # コンテキストデータの取得
+        context = super().get_context_data(**kwargs)
+        # POSTされたデータの受け取り先の作成（formの初期化）
+        if "user_form" not in context:
+            context["user_form"] = UserForm(self.request.POST or None)
+        if "form" not in context:
+            context["form"] = UserProfileForm(self.request.POST or None)
+        return context
+
+    # POSTされたデータの検証
     def form_valid(self, form):
-        user = self.request.user  # 現在のログインユーザーを取得
-        form.instance.user = user  # UserProfileのインスタンスにユーザーをセット
-        return super().form_valid(form)
+        user_form = UserForm(self.request.POST)
+        profile_form = UserProfileForm(self.request.POST, self.request.FILES)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 # ユーザ情報の更新
@@ -54,8 +84,31 @@ class UserProfileUpdateView(UpdateView):
     template_name = "userprofile_form.html"
     success_url = reverse_lazy("accounts:profile_list")
 
-    def form_valid(self, form):
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_profile = self.get_object()
+        if not context.get("user_form"):
+            context["user_form"] = UserForm(instance=user_profile.user)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        user_form = UserForm(request.POST, instance=self.object.user)
+
+        if form.is_valid() and user_form.is_valid():
+            return self.form_valid(form, user_form)
+        else:
+            return self.form_invalid(form, user_form)
+
+    def form_valid(self, form, user_form):
+        # User インスタンスを保存
+        user = user_form.save()
+        # UserProfile インスタンスの user フィールドを更新
+        user_profile = form.save(commit=False)
+        user_profile.user = user
+        user_profile.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 # ユーザ情報の削除
@@ -94,24 +147,3 @@ class UserProfileListView(ListView):
     context_object_name = "profiles"  # テンプレート内で使用する変数名を指定
 
 
-# # ユーザの住所情報を地図に表示
-# class ShowMap(TemplateView):
-#     template_name = "alluser_address.html"
-#     model = UserProfile
-
-#     def map_view(request):
-#         addresses = UserProfile.objects.all()
-#         locations = []
-
-#         for address in addresses:
-#             latitude, longitude = get_coordinates_for_address(address.address)
-#             if latitude is not None and longitude is not None:
-#                 locations.append(
-#                     {
-#                         "user": UserProfile.username,
-#                         "latitude": latitude,
-#                         "longitude": longitude,
-#                     }
-#                 )
-
-#             return render(request, "alluser_address.html", {"addresses": addresses})

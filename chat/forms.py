@@ -1,8 +1,10 @@
 from django import forms
 from django.utils.translation import gettext_lazy
 from . import models
+from .models import Message
+from django.contrib.auth import get_user_model
 
-User = models.User
+User = get_user_model()
 
 
 class SearchForm(forms.Form):
@@ -57,3 +59,15 @@ class RoomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["participants"].queryset = User.objects.filter(is_staff=False)
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ["content"]  # メッセージの内容のみをユーザーに入力させる
+
+    def __init__(self, *args, **kwargs):
+        super(MessageForm, self).__init__(*args, **kwargs)
+        self.fields["content"].widget = forms.Textarea(
+            attrs={"placeholder": "メッセージを入力"}
+        )

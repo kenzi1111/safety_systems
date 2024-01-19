@@ -1,11 +1,12 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
-import operator
 from functools import reduce
+from django.contrib.auth import get_user_model
 
-User = get_user_model()
+# Userモデルインポート
+from django.conf import settings
+import operator
 
 
 class RoomQueryset(models.QuerySet):
@@ -33,11 +34,11 @@ class RoomQueryset(models.QuerySet):
 
 
 class Room(models.Model):
-    host = models.ForeignKey(User, on_delete=models.CASCADE)
+    host = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(gettext_lazy("Room name"), max_length=255)
     description = models.TextField(gettext_lazy("Description"))
     participants = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name="rooms",
         verbose_name=gettext_lazy("Participants"),
         blank=True,
@@ -62,6 +63,7 @@ class Room(models.Model):
         return user is not None and self.host.pk == user.pk
 
     def is_assigned(self, user=None):
+        User = get_user_model()
         try:
             _ = self.participants.all().get(pk=user.pk)
             return True
@@ -78,13 +80,13 @@ class MessageManager(models.Manager):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="messages"
+    )
     content = models.TextField(gettext_lazy("Content"))
     created_at = models.DateTimeField(
         gettext_lazy("Created time"), default=timezone.now
     )
-    read = models.BooleanField(default=False)
-
     objects = MessageManager()
 
     def __str__(self):
@@ -97,6 +99,10 @@ class Message(models.Model):
         return f"{name}:{text}"
 
 
-# 既読機能_時間管理
-class Read(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
+class MessageRead(models.Model):
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="reads")
+    reader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    read_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.reader} read {self.message} at {self.read_at}"

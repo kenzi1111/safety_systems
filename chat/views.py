@@ -5,17 +5,19 @@ from django.views.generic import (
     DeleteView,
     DetailView,
 )
-from django.views import View
-
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from . import models, forms
-from .models import Message
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from .models import Message, MessageRead
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Max, F
 
-# from django.views.decorators.csrf import csrf_exempt
-# from django.views.decorators.http import require_POST
+
+User = get_user_model()
 
 
 class Index(LoginRequiredMixin, ListView):
@@ -90,9 +92,67 @@ class EnterRoom(LoginRequiredMixin, OnlyAssignedUserMixin, DetailView):
     context_object_name = "room"
 
 
-class MarkAsReadView(LoginRequiredMixin, View):
-    def post(self, request, message_id):
-        message = get_object_or_404(Message, id=message_id, owner=request.user)
-        message.read = True
-        message.save()
-        return JsonResponse({"status": "success"})
+# メッセージの未読ユーザand既読ボタン未クリックユーザのリスト作成
+# class UnreadListView(ListView):
+#     model = Message
+#     template_name = "chat/unread_list.html"
+
+#     def get_queryset(self):
+#         cutoff_time = timezone.now() - timedelta(hours=48)
+
+#         latest_messages_dates = Message.objects.values("room").annotate(
+#             latest_date=Max("created_at")
+#         )
+
+#         latest_messages = Message.objects.filter(
+#             created_at__in=latest_messages_dates.values("latest_date")
+#         )
+
+#         unread_messages = latest_messages.filter(
+#             Q(reads__isnull=True) | Q(reads__read_at__lt=cutoff_time)
+#                 ).distinct()
+
+#         return unread_messages
+
+
+class UnreadListView(ListView):
+    model = User  # 未返信ユーザーのリストを表示するためにUserモデルを使用
+    template_name = "chat/unread_list.html"
+
+    def get_queryset(self):
+        cutoff_time = timezone.now() - timedelta(hours=48)
+
+        latest_messages_dates = Message.objects.values("room").annotate(
+            latest_date=Max("created_at")
+        )
+        latest_messages = Message.objects.filter(
+            created_at__in=latest_messages_dates.values("latest_date"),
+            owner=F("room__host"),  # ルームのホストが送信したメッセージのみを対象とする
+        )
+
+        unread_users = User.objects.filter(
+            rooms__messages__in=latest_messages
+            ).exclude(
+            id__in=MessageRead.objects.filter(
+            message__in=latest_messages, read_at__gte=cutoff_time
+            ).values("reader_id")
+        )
+        
+        return unread_users
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["unread_users"] = self.get_queryset()
+        return context
+
+
+# 既読ボタンの処理
+def mark_message_as_read(request, message_id):
+    # 既読ボタンがクリックされたメッセージを取得
+    message = get_object_or_404(Message, id=message_id)
+
+    # 既読情報を記録
+    MessageRead.objects.get_or_create(message=message, reader=request.user)
+
+    # 成功レスポンスを返す
+    return JsonResponse({"status": "success"})

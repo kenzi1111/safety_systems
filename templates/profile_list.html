@@ -8,7 +8,7 @@
     {% for profile in profiles %}
     <li>
         <a href="{% url 'accounts:profile_detail' pk=profile.user.pk %}">
-            ＜ユーザ名＞： {{ profile.username }}  ＜電話番号＞： {{ profile.phone_number }}
+            ＜ユーザ名＞： {{ profile.user.username }}  ＜電話番号＞： {{ profile.phone_number }}
         </a>
     </li>
     {% endfor %}

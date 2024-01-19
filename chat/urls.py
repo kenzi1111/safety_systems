@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 app_name = "chat"
 
 urlpatterns = [
@@ -12,7 +11,8 @@ urlpatterns = [
     path("enter/room/<int:pk>", views.EnterRoom.as_view(), name="enter_room"),
     path(
         "messages/<int:message_id>/read/",
-        views.MarkAsReadView.as_view(),
+        views.mark_message_as_read,
         name="mark_as_read",
     ),
+    path("unread_list/", views.UnreadListView.as_view(), name="unread_list"),
 ]

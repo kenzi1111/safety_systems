@@ -29,13 +29,19 @@ class _BaseConsumer(AsyncJsonWebsocketConsumer):
         try:
             user = self.scope["user"]
             pk = int(self.scope["url_route"]["kwargs"]["room_id"])
-            self.room = await database_sync_to_async(models.Room.objects.get)(pk=pk)
+            self.room = await database_sync_to_async(
+                models.Room.objects.get
+                )(pk=pk)
             self.group_name = f"{self.prefix}{pk}"
-            is_assigned = await database_sync_to_async(self.room.is_assigned)(user)
+            is_assigned = await database_sync_to_async(
+                self.room.is_assigned
+                )(user)
 
             if is_assigned:
                 await self.accept()
-                await self.channel_layer.group_add(self.group_name, self.channel_name)
+                await self.channel_layer.group_add(
+                    self.group_name, self.channel_name
+                    )
                 await self.post_accept(user)
 
         except Exception as err:
@@ -44,7 +50,9 @@ class _BaseConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         user = self.scope["user"]
         await self.pre_disconnect(user)
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        await self.channel_layer.group_discard(
+            self.group_name, self.channel_name
+            )
         await self.close()
         await self.post_disconnect(user)
 

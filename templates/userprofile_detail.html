@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>{{ userprofile.username }}のプロフィール</h2>
+    <h2>{{ userprofile.user.username }}のプロフィール</h2>
     <div class="row mt-4">
         <div class="col-md-4">
             <img src="{{ userprofile.user_image.url }}" alt="Profile Image" class="img-fluid">
@@ -11,7 +11,7 @@
             <table class="table">
                 <tr>
                     <th>名前</th>
-                    <td>{{ userprofile.username }}</td>
+                    <td>{{ userprofile.user.username }}</td>
                 </tr>
                 <tr>
                     <th>Email</th>
