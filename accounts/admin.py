@@ -20,7 +20,7 @@ class CustomUserCreationForm(UserCreationForm):
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "screen_name", "password")}),
+        (None, {"fields": ("email", "username", "password")}),
         (
             gettext_lazy("Permissions"),
             {
@@ -40,7 +40,7 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "screen_name", "password1", "password2"),
+                "fields": ("email", "user", "password1", "password2"),
             },
         ),
     )

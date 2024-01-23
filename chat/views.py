@@ -1,9 +1,10 @@
 from django.views.generic import (
-    ListView,
     CreateView,
     UpdateView,
     DeleteView,
     DetailView,
+    ListView,
+    TemplateView,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -16,6 +17,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Max, F
 
+import json
 
 User = get_user_model()
 
@@ -91,28 +93,15 @@ class EnterRoom(LoginRequiredMixin, OnlyAssignedUserMixin, DetailView):
     template_name = "chat/chat_room.html"
     context_object_name = "room"
 
-
-# メッセージの未読ユーザand既読ボタン未クリックユーザのリスト作成
-# class UnreadListView(ListView):
-#     model = Message
-#     template_name = "chat/unread_list.html"
-
-#     def get_queryset(self):
-#         cutoff_time = timezone.now() - timedelta(hours=48)
-
-#         latest_messages_dates = Message.objects.values("room").annotate(
-#             latest_date=Max("created_at")
-#         )
-
-#         latest_messages = Message.objects.filter(
-#             created_at__in=latest_messages_dates.values("latest_date")
-#         )
-
-#         unread_messages = latest_messages.filter(
-#             Q(reads__isnull=True) | Q(reads__read_at__lt=cutoff_time)
-#                 ).distinct()
-
-#         return unread_messages
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        room = self.object
+        messages = room.messages.all()
+        read_messages = MessageRead.objects.filter(
+            message__in=messages, reader=self.request.user
+        ).values_list("message_id", flat=True)
+        context["read_messages"] = read_messages
+        return context
 
 
 class UnreadListView(ListView):
@@ -130,29 +119,54 @@ class UnreadListView(ListView):
             owner=F("room__host"),  # ルームのホストが送信したメッセージのみを対象とする
         )
 
-        unread_users = User.objects.filter(
-            rooms__messages__in=latest_messages
-            ).exclude(
+        unread_users = User.objects.filter(rooms__messages__in=latest_messages).exclude(
             id__in=MessageRead.objects.filter(
-            message__in=latest_messages, read_at__gte=cutoff_time
+                message__in=latest_messages, read_at__gte=cutoff_time
             ).values("reader_id")
         )
-        
+
         return unread_users
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["unread_users"] = self.get_queryset()
+        print(context)
         return context
 
 
 # 既読ボタンの処理
 def mark_message_as_read(request, message_id):
-    # 既読ボタンがクリックされたメッセージを取得
-    message = get_object_or_404(Message, id=message_id)
+    if request.method == "POST":
+        data = json.loads(request.body)
+        is_read = data.get("is_read", True)
 
-    # 既読情報を記録
-    MessageRead.objects.get_or_create(message=message, reader=request.user)
+        message = get_object_or_404(Message, id=message_id)
+        if is_read:
+            # 既読としてマーク
+            message_read, created = MessageRead.objects.get_or_create(
+                message=message, reader=request.user
+            )
+            message_read.read_at = timezone.now()
+            message_read.save()
+        else:
+            # 未読としてマーク
+            MessageRead.objects.filter(message=message,
+                                       reader=request.user).delete()
 
-    # 成功レスポンスを返す
-    return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "success"})
+
+    return JsonResponse({"status": "error"}, status=400)
+
+
+class ReadMarkView(LoginRequiredMixin, TemplateView):
+    model = Message
+    template_name = "chat/chat_room.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        messages = Message.objects.all()
+        read_messages = MessageRead.objects.filter(
+            message__in=messages, reader=self.request.user
+        ).values_list("message_id", flat=True)
+        context["read_messages"] = list(read_messages)
+        return context

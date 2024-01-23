@@ -13,7 +13,7 @@
         <div id="chat-log">
             <!-- チャットメッセージの表示 -->
             {% for message in room.messages.ordering %}
-            <div class="card" id="message-{{ message.id }}">
+            <div class="card {% if message.id in read_messages %}read-message{% else %}unread-message{% endif %}" id="message-{{ message.id }}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
@@ -27,7 +27,9 @@
                         </div>
                     </div>
                     <!-- 既読ボタンの追加 -->
-                    <button class="mark-read-btn" data-message-id="{{ message.id }}">未読</button>
+                    <button class="mark-read-btn" data-message-id="{{ message.id }}">
+                        {% if message.id in read_messages %}既読{% else %}未読{% endif %}
+                    </button>
                 </div>
             </div>
             {% empty %}
@@ -138,20 +140,20 @@ document.querySelectorAll('.mark-read-btn').forEach(button => {
     button.addEventListener('click', function() {
         const messageId = this.getAttribute('data-message-id');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        let isRead = this.textContent === '既読'; // ボタンの現在の状態を確認
-        let messageElement = document.querySelector(`#message-${messageId}`); // メッセージ要素を取得
+        let isRead = this.textContent.trim() === '既読';
+        let messageElement = document.querySelector(`#message-${messageId}`);
+
         fetch(`/chat/messages/${messageId}/read/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,  // CSRFトークンをヘッダーに含める
+                'X-CSRFToken': csrfToken,
             },
+            body: JSON.stringify({ is_read: !isRead })  // トグル状態をサーバーに送信
         })
-
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // ボタンのテキストとメッセージ枠の色を更新
                 this.textContent = isRead ? '未読' : '既読';
                 if (isRead) {
                     messageElement.classList.remove('read-message');
@@ -163,6 +165,7 @@ document.querySelectorAll('.mark-read-btn').forEach(button => {
             }
         });
     });
-});
+})
+
 </script>
 {% endblock %}
