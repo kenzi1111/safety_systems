@@ -15,7 +15,7 @@ from django.contrib.auth import get_user_model
 from .models import Message, MessageRead
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Max, F
+from django.db.models import Max, F, Q
 
 import json
 
@@ -110,27 +110,33 @@ class UnreadListView(ListView):
 
     def get_queryset(self):
         cutoff_time = timezone.now() - timedelta(hours=48)
-
+        # 最新のメッセージ
         latest_messages_dates = Message.objects.values("room").annotate(
             latest_date=Max("created_at")
         )
+        # 最新のメッセージでhostが送信したメッセージ
         latest_messages = Message.objects.filter(
             created_at__in=latest_messages_dates.values("latest_date"),
             owner=F("room__host"),  # ルームのホストが送信したメッセージのみを対象とする
         )
 
-        unread_users = User.objects.filter(rooms__messages__in=latest_messages).exclude(
-            id__in=MessageRead.objects.filter(
-                message__in=latest_messages, read_at__gte=cutoff_time
-            ).values("reader_id")
-        )
+        # 48時間以上前に既読された、または未読のメッセージ
+        messages_with_old_or_no_reads = Message.objects.filter(
+            Q(id__in=latest_messages)
+            # 既読情報が存在しないメッセージ,48時間以上前に既読されたメッセージ
+            & (Q(reads__isnull=True) | Q(reads__read_at__lt=cutoff_time))
+        ).distinct()
+
+        # 未読メッセージに関連するユーザー
+        unread_users = User.objects.filter(
+            rooms__messages__in=messages_with_old_or_no_reads
+        ).distinct()
 
         return unread_users
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["unread_users"] = self.get_queryset()
-        print(context)
         return context
 
 
@@ -150,8 +156,7 @@ def mark_message_as_read(request, message_id):
             message_read.save()
         else:
             # 未読としてマーク
-            MessageRead.objects.filter(message=message,
-                                       reader=request.user).delete()
+            MessageRead.objects.filter(message=message, reader=request.user).delete()
 
         return JsonResponse({"status": "success"})
 

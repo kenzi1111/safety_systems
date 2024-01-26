@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-12">
                             <span class="card-username">{{ message.owner|stringformat:"s" }}</span>
-                            <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(送信日時 {{ message.created_at|date:'Y-m-d H:i:s' }})</time>
+                            <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(送信日時 {{ message.created_at|date:'Y-m-d H:i' }})</time>
                         </div>
                     </div>
                     <div class="row">
@@ -97,8 +97,54 @@
         node.querySelector('.card-datetime').textContent = messageData.datetime || new Date().toLocaleString();
         node.querySelector('.card-content').textContent = messageData.content;
 
-        document.querySelector('#chat-log').appendChild(node);
+                // 既読ボタンの追加
+    if (messageData.username !== 'system') {
+        const readButton = document.createElement('button');
+        readButton.classList.add('mark-read-btn');
+        readButton.textContent = '未読'; // 新しいメッセージはデフォルトで未読
+        readButton.setAttribute('data-message-id', messageData.id);
+        readButton.addEventListener('click', markReadButtonListener); // イベントリスナーを追加
+        node.querySelector('.card-body').appendChild(readButton);
     }
+
+    document.querySelector('#chat-log').appendChild(node);
+    }
+// 既読ボタンのイベントリスナーを追加する関数
+function markReadButtonListener() {
+    // 既読/未読ボタンの処理は既存のロジックを使用
+    const messageId = this.getAttribute('data-message-id');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    let isRead = this.textContent.trim() === '既読';
+    let messageElement = document.querySelector(`#message-${messageId}`);
+
+    fetch(`/chat/messages/${messageId}/read/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ is_read: !isRead })  // トグル状態をサーバーに送信
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            this.textContent = isRead ? '未読' : '既読';
+            if (isRead) {
+                messageElement.classList.remove('read-message');
+                messageElement.classList.add('unread-message');
+            } else {
+                messageElement.classList.remove('unread-message');
+                messageElement.classList.add('read-message');
+            }
+        }
+    });
+}
+
+// 既存の既読ボタンにイベントリスナーを追加
+document.querySelectorAll('.mark-read-btn').forEach(button => {
+    button.addEventListener('click', markReadButtonListener);
+});
+
 
     // WebSocketの初期化
     function init() {
@@ -134,38 +180,5 @@
     });
 
 })();
-
-//既読ボタンの追加
-document.querySelectorAll('.mark-read-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const messageId = this.getAttribute('data-message-id');
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        let isRead = this.textContent.trim() === '既読';
-        let messageElement = document.querySelector(`#message-${messageId}`);
-
-        fetch(`/chat/messages/${messageId}/read/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ is_read: !isRead })  // トグル状態をサーバーに送信
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                this.textContent = isRead ? '未読' : '既読';
-                if (isRead) {
-                    messageElement.classList.remove('read-message');
-                    messageElement.classList.add('unread-message');
-                } else {
-                    messageElement.classList.remove('unread-message');
-                    messageElement.classList.add('read-message');
-                }
-            }
-        });
-    });
-})
-
 </script>
 {% endblock %}
