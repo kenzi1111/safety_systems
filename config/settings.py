@@ -26,7 +26,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["https://afternoon-dusk-86168-afd67019ad85.herokuapp.com/", "127.0.0.1"]
+ALLOWED_HOSTS = ["safety-systems-51aa41ad2ac0.herokuapp.com", "127.0.0.1"]
 
 
 # Application definition
