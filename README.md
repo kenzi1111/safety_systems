@@ -29,5 +29,6 @@
 ・Heroku 8.7.1
 
 # インフラ構成図
-<img width="965" alt="スクリーンショット 2024-01-31 16 52 20" src="https://github.com/kenzi1111/safety_systems/assets/88967765/26f9c0ab-6cff-4aa7-a133-16761369569b">
+![スクリーンショット 2024-01-31 16 57 51](https://github.com/kenzi1111/safety_systems/assets/88967765/92370f02-ba24-4623-b6e3-19a03552499e)
+
 
