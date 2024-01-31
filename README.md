@@ -27,3 +27,8 @@
 **インフラ**
 
 ・Heroku 8.7.1
+
+# インフラ構成図
+![スクリーンショット 2024-01-31 16 35 11](https://github.com/kenzi1111/safety_systems/assets/88967765/cc7d9ce6-01f3-46dd-9376-8e443134beed)
+
+
