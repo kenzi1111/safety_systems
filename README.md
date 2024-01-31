@@ -37,21 +37,21 @@
 
 
 # 機能一覧
-・ユーザー登録（詳細情報登録）
+### ・ユーザー登録（詳細情報登録）
 ![スクリーンショット 2024-01-31 23 22 20](https://github.com/kenzi1111/safety_systems/assets/88967765/aa2efe99-4f89-42dd-8d4a-7cbf67f86cf6)
 
-・ユーザー登録（基本情報登録,hostのみ）
+### ・ユーザー登録（基本情報登録,hostのみ）
 ![スクリーンショット 2024-01-31 23 21 35](https://github.com/kenzi1111/safety_systems/assets/88967765/fb2d91c2-49ba-4382-a89d-1b40663382bf)
 
-・ログイン機能
+### ・ログイン機能
 ![スクリーンショット 2024-01-31 23 56 41](https://github.com/kenzi1111/safety_systems/assets/88967765/ac5b3102-5a57-4a33-b065-a497e89c48a7)
 
-・チャット機能
+### ・チャット機能
 ![スクリーンショット 2024-01-31 23 22 00](https://github.com/kenzi1111/safety_systems/assets/88967765/fe55bdc5-976a-4d53-ab9a-14ed35195753)
 
-・メッセージの既読機能
+### ・メッセージの既読機能
 ![スクリーンショット 2024-01-31 23 57 49](https://github.com/kenzi1111/safety_systems/assets/88967765/54a4d358-9baa-4c00-aa8e-1113cb1e6536)
 
-・未返信ユーザの一覧表示機能
+### ・未返信ユーザの一覧表示機能
 ![スクリーンショット 2024-01-31 23 22 28](https://github.com/kenzi1111/safety_systems/assets/88967765/fc999f16-184f-468b-bef8-98a66e4ed871)
 
