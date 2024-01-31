@@ -33,8 +33,7 @@
 
 
 # ER図
-![スクリーンショット 2024-01-31 22 27 29](https://github.com/kenzi1111/safety_systems/assets/88967765/2ab8ed39-c8dd-46a8-b841-71fc235847df)
-
+![スクリーンショット 2024-02-01 0 02 53](https://github.com/kenzi1111/safety_systems/assets/88967765/cf8b816b-d011-4d40-b4ff-018d4164fa40)
 
 # 機能一覧
 ### ・ユーザー登録（詳細情報登録）
