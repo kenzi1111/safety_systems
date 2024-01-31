@@ -32,3 +32,5 @@
 ![スクリーンショット 2024-01-31 16 57 51](https://github.com/kenzi1111/safety_systems/assets/88967765/92370f02-ba24-4623-b6e3-19a03552499e)
 
 
+# ER図
+<img width="1302" alt="スクリーンショット 2024-01-31 22 25 49" src="https://github.com/kenzi1111/safety_systems/assets/88967765/ebe0f7dc-3440-4b42-91ae-bf445b29eddc">
