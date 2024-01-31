@@ -6,3 +6,15 @@
 
 <img width="729" alt="スクリーンショット 2024-01-31 12 18 53" src="https://github.com/kenzi1111/safety_systems/assets/88967765/318d133f-8446-4a81-b672-ee43d462206d">
 
+
+# 使用技術
+## フロントエンド
+・HTML/CSS
+・Javascript
+・Bootstrap
+## バックエンド
+・Python 3.11.5
+・Django 4.2.6
+・PostgreSQL
+## インフラ
+・Heroku 8.7.1
