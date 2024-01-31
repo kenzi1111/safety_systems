@@ -9,16 +9,21 @@
 
 # 使用技術
 **フロントエンド**
+
 ・HTML/CSS
 
 ・Javascript
 
 ・Bootstrap
+
 **バックエンド**
+
 ・Python 3.11.5
 
 ・Django 4.2.6
 
 ・PostgreSQL
+
 **インフラ**
+
 ・Heroku 8.7.1
