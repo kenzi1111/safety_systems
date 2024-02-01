@@ -40,7 +40,7 @@
 ![スクリーンショット 2024-01-31 23 21 35](https://github.com/kenzi1111/safety_systems/assets/88967765/fb2d91c2-49ba-4382-a89d-1b40663382bf)
 
 ### ・ユーザー登録（詳細情報登録）
-![スクリーンショット 2024-01-31 23 22 20](https://github.com/kenzi1111/safety_systems/assets/88967765/aa2efe99-4f89-42dd-8d4a-7cbf67f86cf6)
+<img width="1216" alt="スクリーンショット 2024-02-01 10 26 00" src="https://github.com/kenzi1111/safety_systems/assets/88967765/ea4b916f-aabb-4f57-84a0-9bf892819c9a">
 
 ### ・ログイン機能
 ![スクリーンショット 2024-01-31 23 56 41](https://github.com/kenzi1111/safety_systems/assets/88967765/ac5b3102-5a57-4a33-b065-a497e89c48a7)
