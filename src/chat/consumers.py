@@ -29,13 +29,19 @@ class _BaseConsumer(AsyncJsonWebsocketConsumer):
         try:
             user = self.scope["user"]
             pk = int(self.scope["url_route"]["kwargs"]["room_id"])
-            self.room = await database_sync_to_async(models.Room.objects.get)(pk=pk)
+            self.room = await database_sync_to_async(
+                models.Room.objects.get
+                )(pk=pk)
             self.group_name = f"{self.prefix}{pk}"
-            is_assigned = await database_sync_to_async(self.room.is_assigned)(user)
+            is_assigned = await database_sync_to_async(
+                self.room.is_assigned
+                )(user)
 
             if is_assigned:
                 await self.accept()
-                await self.channel_layer.group_add(self.group_name, self.channel_name)
+                await self.channel_layer.group_add(
+                    self.group_name, self.channel_name
+                    )
                 await self.post_accept(user)
 
         except Exception as err:
@@ -44,12 +50,14 @@ class _BaseConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         user = self.scope["user"]
         await self.pre_disconnect(user)
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        await self.channel_layer.group_discard(
+            self.group_name, self.channel_name
+            )
         await self.close()
         await self.post_disconnect(user)
 
 
-# global instance for chat
+# チャット用グローバルインスタンス
 g_chat_clients = {}
 
 
@@ -59,7 +67,7 @@ class ChatConsumer(_BaseConsumer):
         super().__init__(*args, **kwargs)
 
     async def post_accept(self, user):
-        # Send message to group
+        # 送信用メッセージ
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -71,7 +79,7 @@ class ChatConsumer(_BaseConsumer):
         )
 
     async def pre_disconnect(self, user):
-        # Send message to group
+        # 送信用メッセージ
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -85,11 +93,11 @@ class ChatConsumer(_BaseConsumer):
     async def post_disconnect(self, user):
         target = g_chat_clients.get(self.group_name, None)
 
-        # target is empty
+        # targetが空白のとき
         if target is not None and len(target) == 0:
             del g_chat_clients[self.group_name]
 
-    # Send message by system on connection or disconnection
+    # ネットワークの接続or切断時にシステムからメッセージを送信
     async def send_system_message(self, event):
         try:
             room_name = str(self.room)
@@ -122,7 +130,7 @@ class ChatConsumer(_BaseConsumer):
         except Exception as err:
             raise Exception(err)
 
-    # Receive message from WebSocket
+    # WebSocketからメッセージを受信
     async def receive_json(self, content):
         try:
             user = self.scope["user"]

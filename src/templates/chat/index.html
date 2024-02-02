@@ -1,91 +1,102 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load humanize %}
+{% block header  %} 
+    <link rel="stylesheet" type="text/css" href="{% static 'css/chat_room.css' %}">
+
+{% endblock  %} 
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Filtering</h5>
-                <form action="", method="GET">
-                    <div class="form-group row">
-                        <div class="col-12">
-                            {{ search_form.keywords }}
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <button type="submit" class="btn btn-primary btn-block">Search</button>
-                        </div>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <a href="{% url 'chat:index' %}" class="btn btn-secondary btn-block">Output all</a>
-                        </div>
-                    </div>
-                </form>
+<!-- サイドバーメニュー -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- 固定サイドバーメニュー -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'chat:create_room' %}">
+                        <i class="fa-solid fa-pen"></i>新規チャット
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'chat:index' %}">
+                        <i class="fa-solid fa-list"></i>チャット一覧
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Create room</h5>
-                <div class="row">
-                    <div class="col-12">
-                        <a href="{% url 'chat:create_room' %}" class="btn btn-success btn-block">Create</a>
+        </nav>
+        <!-- メインコンテンツ -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title mb-3">チャットルームの検索</h5>
                     </div>
+                    <form action="", method="GET">
+                        <div class="form-group row">
+                            <div class="col-9">
+                                {{ search_form.keywords }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-9 col-sm-9 col-md-9 col-lg-6 col-xl-6 d-flex">
+                                <div class="ml-auto">
+                                    <button type="submit" class="btn btn-primary">検索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
+            <section>
+            {% for room in rooms %}
+                <article>
+                    <div class="row">
+                        <div class="col-8">
+                            <h4 class="h4 mt-1"><a href="{% url 'chat:enter_room' room.pk %}">{{ room.name }}</a></h4>
+                            <p>{{ room.description }}</p>
+                            <div>
+                                <span>{{ room.host|stringformat:"s" }}</span>
+                                <time datetime="{{ room.created_at|date:'Y-m-d' }}">(作成日時 {{ room.created_at|naturaltime }})</time>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                        {% if room.host.pk == user.pk %}
+                            <div class="dropdown mt-2">
+                                <a class="btn btn-outline-secondary btn-block dropdown-toggle" href="#" role="button" 
+                                id="dropdownMenuLink{{ forloop.counter }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                選択
+                                </a>
+        
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink{{ forloop.counter }}">
+                                    <a href="{% url 'chat:update_room' room.pk %}" class="dropdown-item">編集</a>
+                                    <div class="dropdown-divider"></div>
+                                    <button type="button" class="dropdown-item delete-room-modal-button" 
+                                            data-deleteurl="{% url 'chat:delete_room' room.pk %}">
+                                        <span style="color: red">削除</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <article>
+                    <p>No rooms exists.</p>
+                </article>
+            {% endfor %}
+            </section>
+        </main>
     </div>
 </div>
 <div class="row justify-content-center mt-3">
-    <div class="col-12">
-        <section>
-        {% for room in rooms %}
-            <article>
-                <div class="row">
-                    <div class="col-8">
-                        <h4 class="h4 mt-1"><a href="{% url 'chat:enter_room' room.pk %}">{{ room.name }}</a></h4>
-                        <p>{{ room.description }}</p>
-                        <div>
-                            <span>{{ room.host|stringformat:"s" }}</span>
-                            <time datetime="{{ room.created_at|date:'Y-m-d' }}">(created at {{ room.created_at|naturaltime }})</time>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                    {% if room.host.pk == user.pk %}
-                        <div class="dropdown mt-2">
-                            <a class="btn btn-outline-secondary btn-block dropdown-toggle" href="#" role="button" 
-                               id="dropdownMenuLink{{ forloop.counter }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                               Control
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink{{ forloop.counter }}">
-                                <a href="{% url 'chat:update_room' room.pk %}" class="dropdown-item">Update</a>
-                                <div class="dropdown-divider"></div>
-                                <button type="button" class="dropdown-item delete-room-modal-button" 
-                                        data-deleteurl="{% url 'chat:delete_room' room.pk %}">
-                                    <span style="color: red">Delete</span>
-                                </button>
-                            </div>
-                        </div>
-                    {% endif %}
-                    </div>
-                </div>
-            </article>
-        {% empty %}
-            <article>
-                <p>No rooms exists.</p>
-            </article>
-        {% endfor %}
-        </section>
-    </div>
 </div>
 {% if rooms %}
 <div class="row justify-content-center">
-    <div class="col-12">
+    <div class="col-9">
 {% include "pagination.html" %}
     </div>
 </div>
@@ -96,19 +107,19 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmation of deletion</h5>
+                <h5 class="modal-title">削除の確認</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>May I really delete this room ?</p>
+                <p>このチャットルームを削除しますか？</p>
             </div>
             <div class="modal-footer">
                 <form action="" method="POST" id="delete-room-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Accept</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">決定</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
                 </form>
             </div>
         </div>

@@ -1,3 +1,6 @@
 from django.contrib import admin
+from django.contrib import admin
+from .models import Message
 
-# Register your models here.
+# メッセージがDBに登録されているか確認する
+admin.site.register(Message)

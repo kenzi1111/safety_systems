@@ -1,8 +1,10 @@
 from django import forms
 from django.utils.translation import gettext_lazy
 from . import models
+from .models import Message
+from django.contrib.auth import get_user_model
 
-User = models.User
+User = get_user_model()
 
 
 class SearchForm(forms.Form):
@@ -11,7 +13,7 @@ class SearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "placeholder": gettext_lazy("Enter the room name."),
+                "placeholder": gettext_lazy("チャットルームの名前を入力してください"),
                 "class": "form-control",
             }
         ),
@@ -34,7 +36,7 @@ class RoomForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "placeholder": gettext_lazy("Enter the room name."),
+                    "placeholder": gettext_lazy("チャットルームの名前を入力してください"),
                     "class": "form-control",
                 }
             ),
@@ -43,7 +45,7 @@ class RoomForm(forms.ModelForm):
                     "rows": 5,
                     "cols": 10,
                     "style": "resize: none",
-                    "placeholder": gettext_lazy("Enter the description."),
+                    "placeholder": gettext_lazy("チャットルームの概要"),
                     "class": "form-control",
                 }
             ),
@@ -57,3 +59,15 @@ class RoomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["participants"].queryset = User.objects.filter(is_staff=False)
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ["content"]  # メッセージの内容のみをユーザーに入力させる
+
+    def __init__(self, *args, **kwargs):
+        super(MessageForm, self).__init__(*args, **kwargs)
+        self.fields["content"].widget = forms.Textarea(
+            attrs={"placeholder": "メッセージを入力"}
+        )

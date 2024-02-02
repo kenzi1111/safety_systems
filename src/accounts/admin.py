@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy
-from .models import User
+from .models import User, UserProfile
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -20,7 +20,7 @@ class CustomUserCreationForm(UserCreationForm):
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "screen_name", "password")}),
+        (None, {"fields": ("email", "username", "password")}),
         (
             gettext_lazy("Permissions"),
             {
@@ -40,14 +40,17 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "screen_name", "password1", "password2"),
+                "fields": ("email", "user", "password1", "password2"),
             },
         ),
     )
 
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    list_display = ("email", "screen_name", "is_staff")
+    list_display = ("email", "username", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
-    search_fields = ("email", "screen_name")
+    search_fields = ("email", "username")
     ordering = ("id",)
+
+
+admin.site.register(UserProfile)

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>未返信ユーザの一覧</h2>
+
+{% if unread_users %}
+    <ul>
+        {% for user in unread_users %}
+            <li>{{ user.username }} ({{ user.email }})</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>全てのユーザが最新のメッセージに返信しています。</p>
+{% endif %}
+
+{% endblock %}
+
