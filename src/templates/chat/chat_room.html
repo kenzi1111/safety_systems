@@ -13,25 +13,26 @@
         <div id="chat-log">
             <!-- チャットメッセージの表示 -->
             {% for message in room.messages.ordering %}
-            <div class="card {% if message.id in read_messages %}read-message{% else %}unread-message{% endif %}" id="message-{{ message.id }}">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <span class="card-username">{{ message.owner|stringformat:"s" }}</span>
-                            <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(送信日時 {{ message.created_at|date:'Y-m-d H:i' }})</time>
+            <div class ="{%if message.owner == request.user %}mesage-right{% else %}mesage-left{% endif %}">
+                <div class="card {% if message.id in read_messages %}read-message{% else %}unread-message{% endif %}" id="message-{{ message.id }}">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="card-username">{{ message.owner|stringformat:"s" }}</span>
+                                <time class="card-datetime" datetime="{{ message.created_at|date:'Y-m-d' }}">(送信日時 {{ message.created_at|date:'Y-m-d H:i' }})</time>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 card-content">
-                            {{ message.content|linebreaksbr }}
+                        <div class="row">
+                            <div class="col-12 card-content">
+                                {{ message.content|linebreaksbr }}
+                            </div>
                         </div>
+                        <!-- 既読ボタンの追加 -->
+                        <button class="mark-read-btn" data-message-id="{{ message.id }}">
+                            {% if message.id in read_messages %}既読{% else %}未読{% endif %}
+                        </button>
                     </div>
-                    <!-- 既読ボタンの追加 -->
-                    <button class="mark-read-btn" data-message-id="{{ message.id }}">
-                        {% if message.id in read_messages %}既読{% else %}未読{% endif %}
-                    </button>
                 </div>
-            </div>
             {% empty %}
             {% endfor %}
         </div>

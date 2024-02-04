@@ -1,4 +1,27 @@
 .read-message {
    border-color: red;
 }
+.message-position {
+    display: flex;
+    margin-bottom: 10px;
+}
 
+.position-right .card {
+    margin-left: auto;
+    background-color: #DCF8C6; /* LINEの送信メッセージの色 */
+}
+
+.position-left .card {
+    margin-right: auto;
+    background-color: #FFFFFF; /* 受信メッセージの色 */
+}
+
+.card {
+    border-radius: 20px;
+    padding: 10px;
+    max-width: 60%;
+}
+
+.card-body {
+    padding: 5px;
+}
