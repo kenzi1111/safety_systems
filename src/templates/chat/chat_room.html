@@ -90,6 +90,11 @@
 
     // メッセージを画面に表示する関数
     function displayMessage(messageData) {
+
+        if(messageData.username === 'system'){
+            return;
+    }
+
         const template = document.querySelector('#card-template');
         const node = template.content.cloneNode(true);
 
@@ -98,7 +103,7 @@
         node.querySelector('.card-datetime').textContent = messageData.datetime || new Date().toLocaleString();
         node.querySelector('.card-content').textContent = messageData.content;
 
-                // 既読ボタンの追加
+    // 既読ボタンの追加条件
     if (messageData.username !== 'system') {
         const readButton = document.createElement('button');
         readButton.classList.add('mark-read-btn');
