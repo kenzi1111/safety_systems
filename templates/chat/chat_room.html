@@ -91,6 +91,10 @@
 
     // メッセージを画面に表示する関数
     function displayMessage(messageData) {
+        // システムメッセージを表示しない
+    if (messageData.username === 'system') {
+        return; // この行で関数の実行を停止し、何も表示しない
+    }
         const template = document.querySelector('#card-template');
         const node = template.content.cloneNode(true);
 
