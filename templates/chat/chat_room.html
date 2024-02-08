@@ -113,6 +113,8 @@
         node.querySelector('.card-body').appendChild(readButton);
     }
 
+    
+
     document.querySelector('#chat-log').appendChild(node);
     }
 // 既読ボタンのイベントリスナーを追加する関数
@@ -152,32 +154,28 @@ document.querySelectorAll('.mark-read-btn').forEach(button => {
 });
 
 
-    // WebSocketの初期化
-    function init() {
-        const wsScheme = (window.location.protocol === 'https:' ? 'wss' : 'ws');
-        const hostname = window.location.host;
-        const roomID = '{{ room.pk }}';
-        const url = `${wsScheme}://${hostname}/ws/chat/${roomID}`;
-
-        g_socket = new WebSocket(url);
-
-        // WebSocketの接続が開かれたときのイベント
-        g_socket.onopen = (event) => {
-            g_socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (!document.querySelector(`[data-message-id="${data.id}"]`)) {
-                    displayMessage(data);
-                }
-            };
-
-            g_socket.onerror = (event) => {
-                console.log('WebSocket Error: ', event);
-            };
-
-            g_socket.onclose = (event) => {
-                console.log('WebSocket Connection Closed');
-            };
+// WebSocketの初期化
+function init() {
+    const wsScheme = (window.location.protocol === 'https:' ? 'wss' : 'ws');
+    const hostname = window.location.host;
+    const roomID = '{{ room.pk }}';
+    const url = `${wsScheme}://${hostname}/ws/chat/${roomID}`;
+    g_socket = new WebSocket(url);
+    // WebSocketの接続が開かれたときのイベント
+    g_socket.onopen = (event) => {
+        g_socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (!document.querySelector(`[data-message-id="${data.id}"]`)) {
+                displayMessage(data);
+            }
         };
+        g_socket.onerror = (event) => {
+            console.log('WebSocket Error: ', event);
+        };
+        g_socket.onclose = (event) => {
+            console.log('WebSocket Connection Closed');
+        };
+    };
     }
 
     // WebSocketの初期化イベントリスナーをセットアップ

@@ -134,16 +134,19 @@ class ChatConsumer(_BaseConsumer):
     async def receive_json(self, content):
         try:
             user = self.scope["user"]
-            message = content["content"]
-            await self.create_message(user, message)
-            await self.channel_layer.group_send(
-                self.group_name,
+            message_content = content["content"]
+            # メッセージをデータベースに保存する非同期関数を呼び出し
+            message = await self.create_message(user, message_content)
+            # 保存されたメッセージのIDを取得
+            message_id = message.id
+            # フロントエンドにメッセージIDを含む応答を送信
+            await self.send_json(
                 {
-                    "type": "send_chat_message",
-                    "msg_type": "user_message",
-                    "username": str(user),
-                    "message": message,
-                },
+                    "message_id": message_id,
+                    "content": message_content,
+                    "username": user.username if not user.is_anonymous else "Anonymous",
+                    "is_owner": user == self.scope["user"]
+                }
             )
         except Exception as err:
             raise Exception(err)
