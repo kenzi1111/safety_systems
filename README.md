@@ -46,7 +46,8 @@
 ![スクリーンショット 2024-01-31 23 56 41](https://github.com/kenzi1111/safety_systems/assets/88967765/ac5b3102-5a57-4a33-b065-a497e89c48a7)
 
 ### ・チャット機能
-![スクリーンショット 2024-01-31 23 22 00](https://github.com/kenzi1111/safety_systems/assets/88967765/fe55bdc5-976a-4d53-ab9a-14ed35195753)
+<img width="1166" alt="スクリーンショット 2024-02-17 10 32 07" src="https://github.com/kenzi1111/my-first-blog/assets/88967765/0a6548e5-991a-4401-a7a6-4d8856680a63">
+
 
 ### ・メッセージの既読機能
 ![スクリーンショット 2024-01-31 23 57 49](https://github.com/kenzi1111/safety_systems/assets/88967765/54a4d358-9baa-4c00-aa8e-1113cb1e6536)
